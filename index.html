@@ -119,7 +119,7 @@ body{font-family:'Noto Sans JP',system-ui,sans-serif;background:var(--bg);color:
       <div class="st"><div class="v" id="rDf">-</div><div class="l">レベル</div></div>
       <div class="st"><div class="v" id="rHn">0</div><div class="l">ヒント回数</div></div>
     </div>
-    <div class="rbs"><button class="bnx" onclick="nxt()">つぎの問題 →</button><button class="bmn" onclick="goT()">メニューにもどる</button></div>
+    <div class="rbs"><button class="bnx" onclick="nxt()">つぎの問題 →</button><button class="bmn" onclick="goT()">メニューにもどる</button><button class="bmn" onclick="backToPortal()">🎮 他のゲームで遊ぶ</button></div>
   </div>
 </div>
 </div>
@@ -292,7 +292,7 @@ function doCheck(){
     if(S.g[r][c]===S.sol[r][c])cell.classList.add('cok');
     else{allOk=false;cell.classList.add('cng')}
   }
-  if(allOk){S.done=true;stopTm();if(typeof TrailSDK!=='undefined'){const sc=50+(S.hn===0?100:0)+(S.sec<=60?30:S.sec<=120?10:0);const alt=10+(S.hn===0?20:0)+(S.sec<=60?6:S.sec<=120?2:0);TrailSDK.gameOver({score:sc,correct:n*n,total:n*n,alt:alt})}}
+  if(allOk){S.done=true;stopTm();if(typeof TrailSDK!=='undefined'){const sc=50+(S.hn===0?100:0)+(S.sec<=60?30:S.sec<=120?10:0);TrailSDK.gameOver({score:sc,correct:n*n,total:n*n,max_streak:n*n})}}
   showCtl(false);
   for(let r=0;r<n;r++)for(let c=0;c<n;c++)mkBld(gr.children[r*n+c],S.g[r][c],n,S.g[r][c]===S.sol[r][c],(r+c)*90);
   w.classList.add('iso');
@@ -376,6 +376,18 @@ function nxt(){startG(S.n,S.df)}
 function startTm(){stopTm();S.t0=Date.now();S.sec=0;tk();S.tmr=setInterval(tk,500)}
 function stopTm(){if(S.tmr){clearInterval(S.tmr);S.tmr=null}}
 function tk(){S.sec=(Date.now()-S.t0)/1000|0;const m=S.sec/60|0,s=S.sec%60;$('tmr').textContent=`${m}:${String(s).padStart(2,'0')}`}
+function backToPortal() {
+  window.close();
+  setTimeout(() => {
+    document.body.innerHTML = `
+      <div style="text-align:center;padding:60px 20px;font-family:sans-serif;
+                  background:#1a1a2e;color:#fff;min-height:100vh;
+                  display:flex;flex-direction:column;justify-content:center;">
+        <h2>🎮 ゲーム終了！</h2>
+        <p style="color:#aaa;">ブラウザのタブから<br>TRAILポータルに戻ってください。</p>
+      </div>`;
+  }, 500);
+}
 function toast(m){document.querySelectorAll('.toast').forEach(t=>t.remove());const e=document.createElement('div');e.className='toast';e.textContent=m;document.body.appendChild(e);setTimeout(()=>e.remove(),3500)}
 document.addEventListener('click',e=>{if(!e.target.closest('.cell')&&!e.target.closest('.pop')){closePop();S.sel=null;hlS()}});
 rDiff();
