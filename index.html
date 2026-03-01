@@ -123,9 +123,9 @@ body{font-family:'Noto Sans JP',system-ui,sans-serif;background:var(--bg);color:
   </div>
 </div>
 </div>
-<script src="../shared/trail-sdk.js"></script>
+<script src="trail-nav.js"></script>
 <script>
-if(typeof TrailSDK!=='undefined')TrailSDK.ready({gameId:'building-town'});
+TrailNav.init({gameName:'ビルビルタウン',gameId:'building-town-v2',gameEmoji:'🏙️',gameHomeId:'T'});
 const $=id=>document.getElementById(id);
 const S={n:3,df:'easy',sol:null,cl:null,g:null,sel:null,tmr:null,t0:0,sec:0,done:false,ck:false,hn:0,curDir:null};
 const DF={easy:{l:'かんたん',s:'⭐',r:.75},normal:{l:'ふつう',s:'⭐⭐',r:.5},hard:{l:'むずかしい',s:'⭐⭐⭐',r:.3}};
@@ -292,7 +292,7 @@ function doCheck(){
     if(S.g[r][c]===S.sol[r][c])cell.classList.add('cok');
     else{allOk=false;cell.classList.add('cng')}
   }
-  if(allOk){S.done=true;stopTm();if(typeof TrailSDK!=='undefined'){const sc=50+(S.hn===0?100:0)+(S.sec<=60?30:S.sec<=120?10:0);TrailSDK.gameOver({score:sc,correct:n*n,total:n*n,max_streak:n*n})}}
+  if(allOk){S.done=true;stopTm();const sc=50+(S.hn===0?100:0)+(S.sec<=60?30:S.sec<=120?10:0);if(typeof TrailNav!=='undefined')TrailNav.reportGameResult({score:sc,correctCount:n*n,totalCount:n*n,maxStreak:n*n})}
   showCtl(false);
   for(let r=0;r<n;r++)for(let c=0;c<n;c++)mkBld(gr.children[r*n+c],S.g[r][c],n,S.g[r][c]===S.sol[r][c],(r+c)*90);
   w.classList.add('iso');
@@ -377,6 +377,7 @@ function startTm(){stopTm();S.t0=Date.now();S.sec=0;tk();S.tmr=setInterval(tk,50
 function stopTm(){if(S.tmr){clearInterval(S.tmr);S.tmr=null}}
 function tk(){S.sec=(Date.now()-S.t0)/1000|0;const m=S.sec/60|0,s=S.sec%60;$('tmr').textContent=`${m}:${String(s).padStart(2,'0')}`}
 function backToPortal() {
+  if(typeof TrailNav!=='undefined')return TrailNav.goToTGP32();
   window.close();
   setTimeout(() => {
     document.body.innerHTML = `
