@@ -125,7 +125,7 @@ body{font-family:'Noto Sans JP',system-ui,sans-serif;background:var(--bg);color:
 </div>
 <script src="trail-nav.js"></script>
 <script>
-TrailNav.init({gameName:'ビルビルタウン',gameId:'building-town-v2',gameEmoji:'🏙️',gameHomeId:'T'});
+DarwinBridge.ready();
 const $=id=>document.getElementById(id);
 const S={n:3,df:'easy',sol:null,cl:null,g:null,sel:null,tmr:null,t0:0,sec:0,done:false,ck:false,hn:0,curDir:null};
 const DF={easy:{l:'かんたん',s:'⭐',r:.75},normal:{l:'ふつう',s:'⭐⭐',r:.5},hard:{l:'むずかしい',s:'⭐⭐⭐',r:.3}};
@@ -376,19 +376,7 @@ function nxt(){startG(S.n,S.df)}
 function startTm(){stopTm();S.t0=Date.now();S.sec=0;tk();S.tmr=setInterval(tk,500)}
 function stopTm(){if(S.tmr){clearInterval(S.tmr);S.tmr=null}}
 function tk(){S.sec=(Date.now()-S.t0)/1000|0;const m=S.sec/60|0,s=S.sec%60;$('tmr').textContent=`${m}:${String(s).padStart(2,'0')}`}
-function backToPortal() {
-  if(typeof TrailNav!=='undefined')return TrailNav.goToTGP32();
-  window.close();
-  setTimeout(() => {
-    document.body.innerHTML = `
-      <div style="text-align:center;padding:60px 20px;font-family:sans-serif;
-                  background:#1a1a2e;color:#fff;min-height:100vh;
-                  display:flex;flex-direction:column;justify-content:center;">
-        <h2>🎮 ゲーム終了！</h2>
-        <p style="color:#aaa;">ブラウザのタブから<br>TRAILポータルに戻ってください。</p>
-      </div>`;
-  }, 500);
-}
+function backToPortal() { DarwinBridge.exit(); }
 function toast(m){document.querySelectorAll('.toast').forEach(t=>t.remove());const e=document.createElement('div');e.className='toast';e.textContent=m;document.body.appendChild(e);setTimeout(()=>e.remove(),3500)}
 document.addEventListener('click',e=>{if(!e.target.closest('.cell')&&!e.target.closest('.pop')){closePop();S.sel=null;hlS()}});
 rDiff();
