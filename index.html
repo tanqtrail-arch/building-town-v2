@@ -123,6 +123,32 @@ body{font-family:'Noto Sans JP',system-ui,sans-serif;background:var(--bg);color:
   </div>
 </div>
 </div>
+<script>
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbzKUyiUHIMp9JRFX0LEa88plEoavkbrjTQ5oHf9T-FDd6b4fhqfTCBVBy5rWUZPUQbY/exec';
+const urlParams = new URLSearchParams(window.location.search);
+const PLAYER = urlParams.get('player') || '';
+
+async function sendReward(amount, score) {
+  if (!PLAYER || !GAS_URL) return;
+  try {
+    const res = await fetch(GAS_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({
+        action: 'gameReward',
+        player: PLAYER,
+        gameId: urlParams.get('gameId') || '',
+        gameName: urlParams.get('gameName') || document.title,
+        amount: amount,
+        score: score,
+      }),
+    });
+    const data = await res.json();
+    if (data.ok) toast('🎉 ' + amount + ' ALT ゲット！');
+    else if (data.error === 'DAILY_LIMIT') toast('今日のポイントは上限です');
+  } catch (e) { console.error('ポイント送信失敗:', e); }
+}
+</script>
 <script src="trail-nav.js"></script>
 <script>
 if (typeof DarwinBridge === 'undefined') {
@@ -298,7 +324,7 @@ function doCheck(){
     if(S.g[r][c]===S.sol[r][c])cell.classList.add('cok');
     else{allOk=false;cell.classList.add('cng')}
   }
-  if(allOk){S.done=true;stopTm();const sc=50+(S.hn===0?100:0)+(S.sec<=60?30:S.sec<=120?10:0);try{TrailNav.reportGameResult({score:sc,correctCount:n*n,totalCount:n*n,maxStreak:n*n})}catch(e){console.log('TrailNav not available')}}
+  if(allOk){S.done=true;stopTm();const sc=50+(S.hn===0?100:0)+(S.sec<=60?30:S.sec<=120?10:0);try{TrailNav.reportGameResult({score:sc,correctCount:n*n,totalCount:n*n,maxStreak:n*n})}catch(e){console.log('TrailNav not available')}sendReward(sc, sc);}
   showCtl(false);
   for(let r=0;r<n;r++)for(let c=0;c<n;c++)mkBld(gr.children[r*n+c],S.g[r][c],n,S.g[r][c]===S.sol[r][c],(r+c)*90);
   w.classList.add('iso');
