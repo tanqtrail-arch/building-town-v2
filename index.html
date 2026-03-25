@@ -125,6 +125,12 @@ body{font-family:'Noto Sans JP',system-ui,sans-serif;background:var(--bg);color:
 </div>
 <script src="trail-nav.js"></script>
 <script>
+if (typeof DarwinBridge === 'undefined') {
+  window.DarwinBridge = { ready(){}, exit(){} };
+}
+if (typeof TrailNav === 'undefined') {
+  window.TrailNav = { reportGameResult(){} };
+}
 DarwinBridge.ready();
 const $=id=>document.getElementById(id);
 const S={n:3,df:'easy',sol:null,cl:null,g:null,sel:null,tmr:null,t0:0,sec:0,done:false,ck:false,hn:0,curDir:null};
@@ -292,7 +298,7 @@ function doCheck(){
     if(S.g[r][c]===S.sol[r][c])cell.classList.add('cok');
     else{allOk=false;cell.classList.add('cng')}
   }
-  if(allOk){S.done=true;stopTm();const sc=50+(S.hn===0?100:0)+(S.sec<=60?30:S.sec<=120?10:0);if(typeof TrailNav!=='undefined')TrailNav.reportGameResult({score:sc,correctCount:n*n,totalCount:n*n,maxStreak:n*n})}
+  if(allOk){S.done=true;stopTm();const sc=50+(S.hn===0?100:0)+(S.sec<=60?30:S.sec<=120?10:0);try{TrailNav.reportGameResult({score:sc,correctCount:n*n,totalCount:n*n,maxStreak:n*n})}catch(e){console.log('TrailNav not available')}}
   showCtl(false);
   for(let r=0;r<n;r++)for(let c=0;c<n;c++)mkBld(gr.children[r*n+c],S.g[r][c],n,S.g[r][c]===S.sol[r][c],(r+c)*90);
   w.classList.add('iso');
@@ -376,7 +382,7 @@ function nxt(){startG(S.n,S.df)}
 function startTm(){stopTm();S.t0=Date.now();S.sec=0;tk();S.tmr=setInterval(tk,500)}
 function stopTm(){if(S.tmr){clearInterval(S.tmr);S.tmr=null}}
 function tk(){S.sec=(Date.now()-S.t0)/1000|0;const m=S.sec/60|0,s=S.sec%60;$('tmr').textContent=`${m}:${String(s).padStart(2,'0')}`}
-function backToPortal() { DarwinBridge.exit(); }
+function backToPortal() { try { DarwinBridge.exit(); } catch(e) { console.log('DarwinBridge not available'); } }
 function toast(m){document.querySelectorAll('.toast').forEach(t=>t.remove());const e=document.createElement('div');e.className='toast';e.textContent=m;document.body.appendChild(e);setTimeout(()=>e.remove(),3500)}
 document.addEventListener('click',e=>{if(!e.target.closest('.cell')&&!e.target.closest('.pop')){closePop();S.sel=null;hlS()}});
 rDiff();
